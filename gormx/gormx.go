@@ -28,6 +28,7 @@ type ResolverConfig struct {
 // Config 配置参数
 type Config struct {
 	Debug                                    bool             // 是否开启调试模式
+	PrepareStmt                              bool             //
 	DBType                                   string           // 数据库类型,mysql/postgres/sqlite3
 	DSN                                      string           // 数据库链接字符串
 	MaxLifetime                              int              // 连接最长存活期,超过这个时间连接将不再被复用
@@ -63,6 +64,7 @@ func New(cfg Config) (*gorm.DB, error) {
 			TablePrefix:   cfg.TablePrefix,
 			SingularTable: true,
 		},
+		PrepareStmt:                              cfg.PrepareStmt,
 		Logger:                                   logger.Discard,
 		DisableForeignKeyConstraintWhenMigrating: cfg.DisableForeignKeyConstraintWhenMigrating,
 	}
