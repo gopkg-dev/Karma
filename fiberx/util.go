@@ -1,6 +1,7 @@
 package fiberx
 
 import (
+	"net"
 	"strings"
 
 	"github.com/gofiber/fiber/v2"
@@ -23,4 +24,19 @@ func GetToken(c *fiber.Ctx) string {
 	}
 
 	return token
+}
+
+// GetClientIP Get client IP address
+func GetClientIP(c *fiber.Ctx) string {
+	if ip := c.Get("X-Real-IP"); net.ParseIP(ip) != nil {
+		return ip
+	}
+	if xff := c.Get(fiber.HeaderXForwardedFor); xff != "" {
+		for _, ip := range strings.Split(xff, ", ") {
+			if net.ParseIP(ip) != nil {
+				return ip
+			}
+		}
+	}
+	return c.IP()
 }

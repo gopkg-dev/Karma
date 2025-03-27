@@ -19,49 +19,55 @@ import (
 
 type Server struct {
 	*fiber.App
-	host                   string
-	port                   int
-	appName                string
-	serverHeader           string
-	concurrency            int
-	bodyLimit              int
-	caseSensitive          bool
-	strictRouting          bool
-	disableStartupMessage  bool
-	disableKeepalive       bool
-	enablePrintRoutes      bool
-	views                  fiber.Views
-	viewsLayout            string
-	idleTimeout            int
-	readTimeout            int
-	writeTimeout           int
-	shutdownTimeout        int
-	jsonEncoder            utils.JSONMarshal
-	jsonDecoder            utils.JSONUnmarshal
-	handlers               []fiber.Handler
-	defaultErrorHandler    fiber.ErrorHandler
-	defaultNotFoundHandler fiber.Handler
+	host                         string
+	port                         int
+	appName                      string
+	serverHeader                 string
+	concurrency                  int
+	bodyLimit                    int
+	caseSensitive                bool
+	strictRouting                bool
+	disableStartupMessage        bool
+	disableKeepalive             bool
+	enablePrintRoutes            bool
+	views                        fiber.Views
+	viewsLayout                  string
+	idleTimeout                  int
+	readTimeout                  int
+	writeTimeout                 int
+	writeBufferSize              int
+	shutdownTimeout              int
+	streamRequestBody            bool
+	disablePreParseMultipartForm bool
+	jsonEncoder                  utils.JSONMarshal
+	jsonDecoder                  utils.JSONUnmarshal
+	handlers                     []fiber.Handler
+	defaultErrorHandler          fiber.ErrorHandler
+	defaultNotFoundHandler       fiber.Handler
 }
 
 func NewServer(opts ...Option) *Server {
 	s := &Server{
-		appName:                "go-fiber-admin",
-		serverHeader:           "go-fiber-server",
-		concurrency:            256 * 1024,
-		bodyLimit:              5, // MB
-		caseSensitive:          true,
-		strictRouting:          true,
-		disableStartupMessage:  true,
-		disableKeepalive:       false,
-		enablePrintRoutes:      false,
-		idleTimeout:            10,
-		readTimeout:            60,
-		writeTimeout:           60,
-		shutdownTimeout:        10,
-		jsonEncoder:            json.Marshal,
-		jsonDecoder:            json.Unmarshal,
-		defaultErrorHandler:    DefaultErrorHandler,
-		defaultNotFoundHandler: DefaultNotFoundHandler,
+		appName:                      "go-fiber-admin",
+		serverHeader:                 "go-fiber-server",
+		concurrency:                  256 * 1024,
+		bodyLimit:                    5, // MB
+		caseSensitive:                true,
+		strictRouting:                true,
+		disableStartupMessage:        true,
+		disableKeepalive:             false,
+		enablePrintRoutes:            false,
+		idleTimeout:                  10,
+		readTimeout:                  60,
+		writeTimeout:                 60,
+		writeBufferSize:              4096,
+		shutdownTimeout:              10,
+		streamRequestBody:            false,
+		disablePreParseMultipartForm: false,
+		jsonEncoder:                  json.Marshal,
+		jsonDecoder:                  json.Unmarshal,
+		defaultErrorHandler:          DefaultErrorHandler,
+		defaultNotFoundHandler:       DefaultNotFoundHandler,
 	}
 
 	for _, opt := range opts {
@@ -82,11 +88,13 @@ func NewServer(opts ...Option) *Server {
 		DisableKeepalive:      s.disableKeepalive,
 		DisableStartupMessage: s.disableStartupMessage,
 		//EnablePrintRoutes:     s.enablePrintRoutes,
-		AppName:     s.appName,
-		JSONEncoder: s.jsonEncoder,
-		JSONDecoder: s.jsonDecoder,
-		Views:       s.views,
-		ViewsLayout: s.viewsLayout,
+		AppName:                      s.appName,
+		JSONEncoder:                  s.jsonEncoder,
+		JSONDecoder:                  s.jsonDecoder,
+		Views:                        s.views,
+		ViewsLayout:                  s.viewsLayout,
+		StreamRequestBody:            s.streamRequestBody,
+		DisablePreParseMultipartForm: s.disablePreParseMultipartForm,
 	})
 
 	// register middleware
