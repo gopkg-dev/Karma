@@ -3,12 +3,12 @@ package karma
 import (
 	"context"
 	"errors"
-	"github.com/gopkg-dev/karma/log"
 	"os"
 	"os/signal"
 	"sync"
 	"syscall"
 
+	"github.com/gopkg-dev/karma/log"
 	"golang.org/x/sync/errgroup"
 )
 

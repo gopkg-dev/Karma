@@ -11,7 +11,7 @@ import (
 )
 
 // Auth 接口定义了 JWT 认证的方法
-type Auther interface {
+type Authenticator interface {
 	// GenerateToken 生成一个包含给定 subject 的 JWT（JSON Web Token）
 	GenerateToken(ctx context.Context, subject string) (TokenInfo, error)
 	// DestroyToken 使 token 失效，从 token 存储中移除
@@ -61,7 +61,7 @@ func SetExpired(expired int) Option {
 	}
 }
 
-func New(store Store, opts ...Option) Auther {
+func New(store Store, opts ...Option) Authenticator {
 	o := options{
 		tokenType:     "Bearer",
 		expired:       7200,

@@ -10,11 +10,11 @@ import (
 	"github.com/gopkg-dev/karma/validator"
 )
 
-// Map is a shortcut for map[string]interface{}, useful for JSON returns
-type Map map[string]interface{}
+// Map is a shortcut for map[string]any, useful for JSON returns
+type Map map[string]any
 
 // ParseBody ...
-func ParseBody(c *fiber.Ctx, out interface{}) error {
+func ParseBody(c *fiber.Ctx, out any) error {
 	if err := c.BodyParser(out); err != nil {
 		return errors.BadRequest("Failed to parse body: %s", err.Error())
 	}
@@ -22,7 +22,7 @@ func ParseBody(c *fiber.Ctx, out interface{}) error {
 }
 
 // ParseBodyAndValidate ...
-func ParseBodyAndValidate(c *fiber.Ctx, out interface{}) error {
+func ParseBodyAndValidate(c *fiber.Ctx, out any) error {
 	if err := ParseBody(c, out); err != nil {
 		return err
 	}
@@ -30,7 +30,7 @@ func ParseBodyAndValidate(c *fiber.Ctx, out interface{}) error {
 }
 
 // ParseQuery ...
-func ParseQuery(c *fiber.Ctx, out interface{}) error {
+func ParseQuery(c *fiber.Ctx, out any) error {
 	if err := c.QueryParser(out); err != nil {
 		return errors.BadRequest("Failed to parse query: %s", err.Error())
 	}
@@ -38,7 +38,7 @@ func ParseQuery(c *fiber.Ctx, out interface{}) error {
 }
 
 // ParseQueryAndValidate ...
-func ParseQueryAndValidate(c *fiber.Ctx, out interface{}) error {
+func ParseQueryAndValidate(c *fiber.Ctx, out any) error {
 	if err := ParseQuery(c, out); err != nil {
 		return err
 	}
@@ -46,7 +46,7 @@ func ParseQueryAndValidate(c *fiber.Ctx, out interface{}) error {
 }
 
 // ParseParams ...
-func ParseParams(c *fiber.Ctx, out interface{}) error {
+func ParseParams(c *fiber.Ctx, out any) error {
 	if err := c.ParamsParser(out); err != nil {
 		return errors.BadRequest("Failed to parse params: %s", err.Error())
 	}
@@ -54,7 +54,7 @@ func ParseParams(c *fiber.Ctx, out interface{}) error {
 }
 
 // ParseParamsAndValidate ...
-func ParseParamsAndValidate(c *fiber.Ctx, out interface{}) error {
+func ParseParamsAndValidate(c *fiber.Ctx, out any) error {
 	if err := ParseParams(c, out); err != nil {
 		return err
 	}
@@ -64,12 +64,12 @@ func ParseParamsAndValidate(c *fiber.Ctx, out interface{}) error {
 // Response is a API response
 type Response struct {
 	Success bool          `json:"success"`
-	Data    interface{}   `json:"data,omitempty"`
+	Data    any           `json:"data,omitempty"`
 	Total   int64         `json:"total,omitempty"`
 	Error   *errors.Error `json:"error,omitempty"`
 }
 
-func ResSuccess(c *fiber.Ctx, v interface{}) error {
+func ResSuccess(c *fiber.Ctx, v any) error {
 	return c.Status(fiber.StatusOK).JSON(Response{
 		Success: true,
 		Data:    v,
@@ -82,14 +82,14 @@ func ResOK(c *fiber.Ctx) error {
 	})
 }
 
-func ResPage(c *fiber.Ctx, v interface{}, pr *gormx.PaginationResult) error {
+func ResPage(c *fiber.Ctx, v any, pr *gormx.PaginationResult) error {
 	var total int64
 	if pr != nil {
 		total = pr.Total
 	}
 	reflectValue := reflect.Indirect(reflect.ValueOf(v))
-	if reflectValue.Kind() == reflect.Ptr && reflectValue.IsZero() {
-		v = make([]interface{}, 0)
+	if reflectValue.Kind() == reflect.Pointer && reflectValue.IsZero() {
+		v = make([]any, 0)
 	}
 	return c.Status(fiber.StatusOK).JSON(Response{
 		Success: true,
